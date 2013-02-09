@@ -207,8 +207,6 @@ void handle_events()
 						rotation = m4f_ident();
 						break;
 					case SDLK_q:
-						exit(0);
-						break;
 					case SDLK_ESCAPE:
 						exit(0);
 						break;
