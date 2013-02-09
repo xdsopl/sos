@@ -1,0 +1,19 @@
+
+sos - SDL OpenGL Skeleton
+Written in 2013 by <Ahmet Inan> <xdsopl@googlemail.com>
+To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+This demo is intended to be a simple starting point for beginners interested
+in writing their own OpenGL applications using the SDL framework.
+
+It demonstrates voxel traversal of a ray through an uniform grid:
+http://aam.mathematik.uni-freiburg.de/IAM/homepages/ainan/sos.png
+
+The algorithm can be used for accelerating ray tracing for example.
+
+Usage:
+moving mouse while holding left mouse button down = rotate view
+moving mouse while holding right mouse button down = change ray direction
+mouse wheel = zoom in or out
+
