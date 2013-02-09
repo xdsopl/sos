@@ -199,10 +199,7 @@ void handle_events()
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_ACTIVEEVENT:
-				if (event.active.gain)
-					focus = 1;
-				else
-					focus = 0;
+				focus = event.active.gain;
 				break;
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
