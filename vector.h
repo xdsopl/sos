@@ -42,6 +42,11 @@ struct v3f v3f_mul(float a, struct v3f b)
 	return (struct v3f){ a * b.x, a * b.y, a * b.z };
 }
 
+struct v3f v3f_cmul(struct v3f a, struct v3f b)
+{
+	return (struct v3f){ a.x * b.x, a.y * b.y, a.z * b.z };
+}
+
 struct v3f v3f_cdiv(struct v3f a, struct v3f b)
 {
 	return (struct v3f){ a.x / b.x, a.y / b.y, a.z / b.z };
@@ -156,6 +161,11 @@ struct v3u v3f_ge(struct v3f a, struct v3f b)
 struct v3u v3f_eq(struct v3f a, struct v3f b)
 {
 	return (struct v3u){ (a.x == b.x) ? ~0 : 0, (a.y == b.y) ? ~0 : 0, (a.z == b.z) ? ~0 : 0 };
+}
+
+struct v3u v3f_seq(float a, struct v3f b)
+{
+	return (struct v3u){ (a == b.x) ? ~0 : 0, (a == b.y) ? ~0 : 0, (a == b.z) ? ~0 : 0 };
 }
 
 struct v3i v3f2i(struct v3f a)
