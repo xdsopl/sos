@@ -135,7 +135,7 @@ void dynamic_objects()
 	struct v3f fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(g, far_planes)), big_box.c0);
 	struct v3f step = v3f_cmul(v3i2f(ray.sign), cell_len);
 
-	while (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < cells.x && g.y < cells.y && g.z < cells.z) {
+	while (v3i_inside(g, cells)) {
 		draw_cell(red, g);
 		struct v3f max = v3f_sub_cmul(fp, ray.o, ray.inv_d);
 		struct v3u s = v3f_seq(v3f_hmin(max), max);
