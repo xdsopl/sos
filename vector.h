@@ -133,9 +133,19 @@ struct v3u v3u_and(struct v3u a, struct v3u b)
 	return (struct v3u){ a.x & b.x, a.y & b.y, a.z & b.z };
 }
 
+unsigned int v3u_hand(struct v3u a)
+{
+	return a.x & a.y & a.z;
+}
+
 struct v3u v3u_or(struct v3u a, struct v3u b)
 {
 	return (struct v3u){ a.x | b.x, a.y | b.y, a.z | b.z };
+}
+
+unsigned int v3u_hor(struct v3u a)
+{
+	return a.x | a.y | a.z;
 }
 
 struct v3u v3u_xor(struct v3u a, struct v3u b)
@@ -158,6 +168,21 @@ struct v3u v3f_ge(struct v3f a, struct v3f b)
 	return (struct v3u){ (a.x >= b.x) ? ~0 : 0, (a.y >= b.y) ? ~0 : 0, (a.z >= b.z) ? ~0 : 0 };
 }
 
+struct v3u v3i_ge(struct v3i a, struct v3i b)
+{
+	return (struct v3u){ (a.x >= b.x) ? ~0 : 0, (a.y >= b.y) ? ~0 : 0, (a.z >= b.z) ? ~0 : 0 };
+}
+
+struct v3u v3f_lt(struct v3f a, struct v3f b)
+{
+	return (struct v3u){ (a.x < b.x) ? ~0 : 0, (a.y < b.y) ? ~0 : 0, (a.z < b.z) ? ~0 : 0 };
+}
+
+struct v3u v3i_lt(struct v3i a, struct v3i b)
+{
+	return (struct v3u){ (a.x < b.x) ? ~0 : 0, (a.y < b.y) ? ~0 : 0, (a.z < b.z) ? ~0 : 0 };
+}
+
 struct v3u v3f_eq(struct v3f a, struct v3f b)
 {
 	return (struct v3u){ (a.x == b.x) ? ~0 : 0, (a.y == b.y) ? ~0 : 0, (a.z == b.z) ? ~0 : 0 };
@@ -166,6 +191,11 @@ struct v3u v3f_eq(struct v3f a, struct v3f b)
 struct v3u v3f_seq(float a, struct v3f b)
 {
 	return (struct v3u){ (a == b.x) ? ~0 : 0, (a == b.y) ? ~0 : 0, (a == b.z) ? ~0 : 0 };
+}
+
+unsigned int v3i_inside(struct v3i a, struct v3i b)
+{
+	return (a.x >= 0) & (a.y >= 0) & (a.z >= 0) & (a.x < b.x) & (a.y < b.y) & (a.z < b.z);
 }
 
 struct v3i v3f2i(struct v3f a)
