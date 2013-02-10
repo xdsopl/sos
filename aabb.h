@@ -16,15 +16,10 @@ struct aabb
 	struct v3f c0, c1;
 };
 
-struct v3i aabb_ray_step(struct v3f fp, struct ray ray)
+struct v3u aabb_ray_step(struct v3f fp, struct ray ray)
 {
-	struct v3i s;
 	struct v3f max = v3f_sub_cmul(fp, ray.o, ray.inv_d);
-	float l1 = v3f_hmin(max);
-	s.x = max.x == l1 ? ray.sign.x : 0;
-	s.y = max.y == l1 ? ray.sign.y : 0;
-	s.z = max.z == l1 ? ray.sign.z : 0;
-	return s;
+	return v3f_seq(v3f_hmin(max), max);
 }
 
 int aabb_ray(float l[2], struct aabb box, struct ray ray)

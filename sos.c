@@ -133,12 +133,13 @@ void dynamic_objects()
 	struct v3i g = v3f2i(v3f_sub_cdiv(inside, big_box.c0, cell_len));
 	struct v3i far_planes = v3i(ray.d.x >= 0 ? 1 : 0, ray.d.y >= 0 ? 1 : 0, ray.d.z >= 0 ? 1 : 0);
 	struct v3f fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(g, far_planes)), big_box.c0);
+	struct v3f step = v3f_cmul(v3i2f(ray.sign), cell_len);
 
 	while (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < cells.x && g.y < cells.y && g.z < cells.z) {
 		draw_cell(red, g);
-		struct v3i s = aabb_ray_step(fp, ray);
-		g = v3i_add(g, s);
-		fp = v3f_cmul_add(cell_len, v3i2f(s), fp);
+		struct v3u s = aabb_ray_step(fp, ray);
+		g = v3i_add(g, v3u2i(v3u_and(s, v3i2u(ray.sign))));
+		fp = v3f_add(fp, v3u2f(v3u_and(s, v3f2u(step))));
 	}
 }
 
