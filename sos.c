@@ -68,6 +68,16 @@ void draw_box(struct v3f color, struct aabb box)
 	glEnd();
 }
 
+void draw_cell(struct v3f color, struct v3i g)
+{
+	struct v3f cell_len = v3f_sub_cdiv(big_box.c1, big_box.c0, v3i2f(cells));
+	struct aabb box = {
+		v3f_cmul_add(cell_len, v3i2f(g), big_box.c0),
+		v3f_cmul_add(cell_len, v3i2f(v3i_sadd(1, g)), big_box.c0)
+	};
+	draw_box(color, box);
+}
+
 void line(struct v3f color, struct v3f p0, struct v3f p1)
 {
 	glColor3f(color.x, color.y, color.z);
@@ -79,17 +89,12 @@ void line(struct v3f color, struct v3f p0, struct v3f p1)
 
 void static_objects()
 {
-	struct v3f cell_len = v3f_sub_cdiv(big_box.c1, big_box.c0, v3i2f(cells));
 	struct v3i g;
 	for (g.x = 0; g.x < cells.x; g.x++)
 	for (g.y = 0; g.y < cells.y; g.y++)
 	for (g.z = 0; g.z < cells.z; g.z++) {
 		struct v3f color = { 0.1, 0.1, 0.1 };
-		struct aabb box = {
-			v3f_cmul_add(cell_len, v3i2f(g), big_box.c0),
-			v3f_cmul_add(cell_len, v3i2f(v3i_sadd(1, g)), big_box.c0)
-		};
-		draw_box(color, box);
+		draw_cell(color, g);
 	}
 }
 
@@ -126,18 +131,14 @@ void dynamic_objects()
 	float epsilon = 0.001;
 	struct v3f inside = v3f_mul_add(l[0] + epsilon, ray.d, ray.o);
 	struct v3i g = v3f2i(v3f_sub_cdiv(inside, big_box.c0, cell_len));
-
-	struct aabb box = {
-		v3f_cmul_add(cell_len, v3i2f(g), big_box.c0),
-		v3f_cmul_add(cell_len, v3i2f(v3i_sadd(1, g)), big_box.c0)
-	};
+	struct v3i far_planes = v3i(ray.d.x >= 0 ? 1 : 0, ray.d.y >= 0 ? 1 : 0, ray.d.z >= 0 ? 1 : 0);
+	struct v3f fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(g, far_planes)), big_box.c0);
 
 	while (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < cells.x && g.y < cells.y && g.z < cells.z) {
-		draw_box(red, box);
-		struct v3i s = aabb_ray_step(box, ray);
+		draw_cell(red, g);
+		struct v3i s = aabb_ray_step(fp, ray);
 		g = v3i_add(g, s);
-		box.c0 = v3f_cmul_add(cell_len, v3i2f(s), box.c0);
-		box.c1 = v3f_cmul_add(cell_len, v3i2f(s), box.c1);
+		fp = v3f_cmul_add(cell_len, v3i2f(s), fp);
 	}
 }
 
