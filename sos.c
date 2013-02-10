@@ -137,7 +137,8 @@ void dynamic_objects()
 
 	while (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < cells.x && g.y < cells.y && g.z < cells.z) {
 		draw_cell(red, g);
-		struct v3u s = aabb_ray_step(fp, ray);
+		struct v3f max = v3f_sub_cmul(fp, ray.o, ray.inv_d);
+		struct v3u s = v3f_seq(v3f_hmin(max), max);
 		g = v3i_add(g, v3u2i(v3u_and(s, v3i2u(ray.sign))));
 		fp = v3f_add(fp, v3u2f(v3u_and(s, v3f2u(step))));
 	}
