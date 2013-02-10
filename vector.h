@@ -18,6 +18,10 @@ struct v3i {
 	int x, y, z;
 };
 
+struct v3u {
+	unsigned int x, y, z;
+};
+
 struct v3f v3f(float x, float y, float z)
 {
 	return (struct v3f){ x, y, z };
@@ -26,6 +30,11 @@ struct v3f v3f(float x, float y, float z)
 struct v3i v3i(int x, int y, int z)
 {
 	return (struct v3i){ x, y, z };
+}
+
+struct v3u v3u(unsigned int x, unsigned int y, unsigned int z)
+{
+	return (struct v3u){ x, y, z };
 }
 
 struct v3f v3f_mul(float a, struct v3f b)
@@ -114,6 +123,31 @@ float v3f_hmax(struct v3f a)
 	return fmaxf(fmaxf(a.x, a.y), a.z);
 }
 
+struct v3u v3u_and(struct v3u a, struct v3u b)
+{
+	return (struct v3u){ a.x & b.x, a.y & b.y, a.z & b.z };
+}
+
+struct v3u v3u_or(struct v3u a, struct v3u b)
+{
+	return (struct v3u){ a.x | b.x, a.y | b.y, a.z | b.z };
+}
+
+struct v3u v3u_xor(struct v3u a, struct v3u b)
+{
+	return (struct v3u){ a.x ^ b.x, a.y ^ b.y, a.z ^ b.z };
+}
+
+struct v3u v3u_not(struct v3u a)
+{
+	return (struct v3u){ ~a.x, ~a.y, ~a.z };
+}
+
+struct v3u v3u_select(struct v3u a, struct v3u b, struct v3u c)
+{
+	return (struct v3u){ (a.x & b.x) | ((~a.x) & c.x), (a.y & b.y) | ((~a.y) & c.y), (a.z & b.z) | ((~a.z) & c.z) };
+}
+
 struct v3i v3f2i(struct v3f a)
 {
 	return (struct v3i){ a.x, a.y, a.z };
@@ -124,4 +158,43 @@ struct v3f v3i2f(struct v3i a)
 	return (struct v3f){ a.x, a.y, a.z };
 }
 
+struct v3u v3i2u(struct v3i a)
+{
+	union {
+		struct v3i in;
+		struct v3u out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3u v3f2u(struct v3f a)
+{
+	union {
+		struct v3f in;
+		struct v3u out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3f v3u2f(struct v3u a)
+{
+	union {
+		struct v3u in;
+		struct v3f out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3i v3u2i(struct v3u a)
+{
+	union {
+		struct v3u in;
+		struct v3i out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
 #endif
