@@ -153,6 +153,11 @@ struct v3u v3f_ge(struct v3f a, struct v3f b)
 	return (struct v3u){ (a.x >= b.x) ? ~0 : 0, (a.y >= b.y) ? ~0 : 0, (a.z >= b.z) ? ~0 : 0 };
 }
 
+struct v3u v3f_eq(struct v3f a, struct v3f b)
+{
+	return (struct v3u){ (a.x == b.x) ? ~0 : 0, (a.y == b.y) ? ~0 : 0, (a.z == b.z) ? ~0 : 0 };
+}
+
 struct v3i v3f2i(struct v3f a)
 {
 	return (struct v3i){ a.x, a.y, a.z };
