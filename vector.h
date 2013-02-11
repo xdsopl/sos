@@ -37,6 +37,56 @@ struct v3u v3u(unsigned int x, unsigned int y, unsigned int z)
 	return (struct v3u){ x, y, z };
 }
 
+struct v3i v3f2i(struct v3f a)
+{
+	return (struct v3i){ a.x, a.y, a.z };
+}
+
+struct v3f v3i2f(struct v3i a)
+{
+	return (struct v3f){ a.x, a.y, a.z };
+}
+
+struct v3u v3i2u(struct v3i a)
+{
+	union {
+		struct v3i in;
+		struct v3u out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3u v3f2u(struct v3f a)
+{
+	union {
+		struct v3f in;
+		struct v3u out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3f v3u2f(struct v3u a)
+{
+	union {
+		struct v3u in;
+		struct v3f out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
+struct v3i v3u2i(struct v3u a)
+{
+	union {
+		struct v3u in;
+		struct v3i out;
+	} fu;
+	fu.in = a;
+	return fu.out;
+}
+
 struct v3f v3f_neg(struct v3f a)
 {
 	return (struct v3f){ - a.x, - a.y, - a.z };
@@ -138,6 +188,16 @@ struct v3u v3u_and(struct v3u a, struct v3u b)
 	return (struct v3u){ a.x & b.x, a.y & b.y, a.z & b.z };
 }
 
+struct v3f v3f_and(struct v3u a, struct v3f b)
+{
+	return v3u2f(v3u_and(a, v3f2u(b)));
+}
+
+struct v3i v3i_and(struct v3u a, struct v3i b)
+{
+	return v3u2i(v3u_and(a, v3i2u(b)));
+}
+
 unsigned int v3u_hand(struct v3u a)
 {
 	return a.x & a.y & a.z;
@@ -166,6 +226,16 @@ struct v3u v3u_not(struct v3u a)
 struct v3u v3u_select(struct v3u a, struct v3u b, struct v3u c)
 {
 	return (struct v3u){ (a.x & b.x) | ((~a.x) & c.x), (a.y & b.y) | ((~a.y) & c.y), (a.z & b.z) | ((~a.z) & c.z) };
+}
+
+struct v3f v3f_select(struct v3u a, struct v3f b, struct v3f c)
+{
+	return v3u2f(v3u_select(a, v3f2u(b), v3f2u(c)));
+}
+
+struct v3i v3i_select(struct v3u a, struct v3i b, struct v3i c)
+{
+	return v3u2i(v3u_select(a, v3i2u(b), v3i2u(c)));
 }
 
 struct v3u v3f_ge(struct v3f a, struct v3f b)
@@ -201,55 +271,5 @@ struct v3u v3f_seq(float a, struct v3f b)
 unsigned int v3i_inside(struct v3i a, struct v3i b)
 {
 	return (a.x >= 0) & (a.y >= 0) & (a.z >= 0) & (a.x < b.x) & (a.y < b.y) & (a.z < b.z);
-}
-
-struct v3i v3f2i(struct v3f a)
-{
-	return (struct v3i){ a.x, a.y, a.z };
-}
-
-struct v3f v3i2f(struct v3i a)
-{
-	return (struct v3f){ a.x, a.y, a.z };
-}
-
-struct v3u v3i2u(struct v3i a)
-{
-	union {
-		struct v3i in;
-		struct v3u out;
-	} fu;
-	fu.in = a;
-	return fu.out;
-}
-
-struct v3u v3f2u(struct v3f a)
-{
-	union {
-		struct v3f in;
-		struct v3u out;
-	} fu;
-	fu.in = a;
-	return fu.out;
-}
-
-struct v3f v3u2f(struct v3u a)
-{
-	union {
-		struct v3u in;
-		struct v3f out;
-	} fu;
-	fu.in = a;
-	return fu.out;
-}
-
-struct v3i v3u2i(struct v3u a)
-{
-	union {
-		struct v3u in;
-		struct v3i out;
-	} fu;
-	fu.in = a;
-	return fu.out;
 }
 #endif
