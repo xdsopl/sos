@@ -187,7 +187,7 @@ float v3f_hmax(struct v3f a)
 
 struct v3u v3u_and(struct v3u a, struct v3u b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ a.x & b.x, a.y & b.y, a.z & b.z };
 #else
 	return (struct v3u){ a.x && b.x, a.y && b.y, a.z && b.z };
@@ -196,17 +196,25 @@ struct v3u v3u_and(struct v3u a, struct v3u b)
 
 struct v3f v3f_and(struct v3u a, struct v3f b)
 {
+#if STREAMING
 	return v3u2f(v3u_and(a, v3f2u(b)));
+#else
+	return (struct v3f){ a.x ? b.x : 0, a.y ? b.y : 0, a.z ? b.z : 0 };
+#endif
 }
 
 struct v3i v3i_and(struct v3u a, struct v3i b)
 {
+#if STREAMING
 	return v3u2i(v3u_and(a, v3i2u(b)));
+#else
+	return (struct v3i){ a.x ? b.x : 0, a.y ? b.y : 0, a.z ? b.z : 0 };
+#endif
 }
 
 unsigned int v3u_hand(struct v3u a)
 {
-#ifdef STREAMING
+#if STREAMING
 	return a.x & a.y & a.z;
 #else
 	return a.x && a.y && a.z;
@@ -215,7 +223,7 @@ unsigned int v3u_hand(struct v3u a)
 
 struct v3u v3u_or(struct v3u a, struct v3u b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ a.x | b.x, a.y | b.y, a.z | b.z };
 #else
 	return (struct v3u){ a.x || b.x, a.y || b.y, a.z || b.z };
@@ -224,7 +232,7 @@ struct v3u v3u_or(struct v3u a, struct v3u b)
 
 unsigned int v3u_hor(struct v3u a)
 {
-#ifdef STREAMING
+#if STREAMING
 	return a.x | a.y | a.z;
 #else
 	return a.x || a.y || a.z;
@@ -233,7 +241,7 @@ unsigned int v3u_hor(struct v3u a)
 
 struct v3u v3u_xor(struct v3u a, struct v3u b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ a.x ^ b.x, a.y ^ b.y, a.z ^ b.z };
 #else
 	return (struct v3u){ (a.x && !b.x) || (!a.x && b.x), (a.y && !b.y) || (!a.y && b.y), (a.z && !b.z) || (!a.z && b.z) };
@@ -242,7 +250,7 @@ struct v3u v3u_xor(struct v3u a, struct v3u b)
 
 struct v3u v3u_not(struct v3u a)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ ~a.x, ~a.y, ~a.z };
 #else
 	return (struct v3u){ !a.x, !a.y, !a.z };
@@ -251,7 +259,7 @@ struct v3u v3u_not(struct v3u a)
 
 struct v3u v3u_select(struct v3u a, struct v3u b, struct v3u c)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x & b.x) | ((~a.x) & c.x), (a.y & b.y) | ((~a.y) & c.y), (a.z & b.z) | ((~a.z) & c.z) };
 #else
 	return (struct v3u){ a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z };
@@ -260,17 +268,25 @@ struct v3u v3u_select(struct v3u a, struct v3u b, struct v3u c)
 
 struct v3f v3f_select(struct v3u a, struct v3f b, struct v3f c)
 {
+#if STREAMING
 	return v3u2f(v3u_select(a, v3f2u(b), v3f2u(c)));
+#else
+	return (struct v3f){ a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z };
+#endif
 }
 
 struct v3i v3i_select(struct v3u a, struct v3i b, struct v3i c)
 {
+#if STREAMING
 	return v3u2i(v3u_select(a, v3i2u(b), v3i2u(c)));
+#else
+	return (struct v3i){ a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z };
+#endif
 }
 
 struct v3u v3f_ge(struct v3f a, struct v3f b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x >= b.x) ? ~0 : 0, (a.y >= b.y) ? ~0 : 0, (a.z >= b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a.x >= b.x, a.y >= b.y, a.z >= b.z };
@@ -279,7 +295,7 @@ struct v3u v3f_ge(struct v3f a, struct v3f b)
 
 struct v3u v3i_ge(struct v3i a, struct v3i b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x >= b.x) ? ~0 : 0, (a.y >= b.y) ? ~0 : 0, (a.z >= b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a.x >= b.x, a.y >= b.y, a.z >= b.z };
@@ -288,7 +304,7 @@ struct v3u v3i_ge(struct v3i a, struct v3i b)
 
 struct v3u v3f_lt(struct v3f a, struct v3f b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x < b.x) ? ~0 : 0, (a.y < b.y) ? ~0 : 0, (a.z < b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a.x < b.x, a.y < b.y, a.z < b.z };
@@ -297,7 +313,7 @@ struct v3u v3f_lt(struct v3f a, struct v3f b)
 
 struct v3u v3i_lt(struct v3i a, struct v3i b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x < b.x) ? ~0 : 0, (a.y < b.y) ? ~0 : 0, (a.z < b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a.x < b.x, a.y < b.y, a.z < b.z };
@@ -306,7 +322,7 @@ struct v3u v3i_lt(struct v3i a, struct v3i b)
 
 struct v3u v3f_eq(struct v3f a, struct v3f b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a.x == b.x) ? ~0 : 0, (a.y == b.y) ? ~0 : 0, (a.z == b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a.x == b.x, a.y == b.y, a.z == b.z };
@@ -315,7 +331,7 @@ struct v3u v3f_eq(struct v3f a, struct v3f b)
 
 struct v3u v3f_seq(float a, struct v3f b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (struct v3u){ (a == b.x) ? ~0 : 0, (a == b.y) ? ~0 : 0, (a == b.z) ? ~0 : 0 };
 #else
 	return (struct v3u){ a == b.x, a == b.y, a == b.z };
@@ -324,7 +340,7 @@ struct v3u v3f_seq(float a, struct v3f b)
 
 unsigned int v3i_inside(struct v3i a, struct v3i b)
 {
-#ifdef STREAMING
+#if STREAMING
 	return (a.x >= 0) & (a.y >= 0) & (a.z >= 0) & (a.x < b.x) & (a.y < b.y) & (a.z < b.z);
 #else
 	return (a.x >= 0) && (a.y >= 0) && (a.z >= 0) && (a.x < b.x) && (a.y < b.y) && (a.z < b.z);
