@@ -37,6 +37,11 @@ struct v3u v3u(unsigned int x, unsigned int y, unsigned int z)
 	return (struct v3u){ x, y, z };
 }
 
+struct v3f v3f_neg(struct v3f a)
+{
+	return (struct v3f){ - a.x, - a.y, - a.z };
+}
+
 struct v3f v3f_mul(float a, struct v3f b)
 {
 	return (struct v3f){ a * b.x, a * b.y, a * b.z };
