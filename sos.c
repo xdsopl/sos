@@ -131,15 +131,16 @@ void dynamic_objects()
 	float epsilon = 0.001;
 	struct v3f inside = v3f_mul_add(l[0] + epsilon, ray.d, ray.o);
 	struct v3i g = v3f2i(v3f_sub_cdiv(inside, big_box.c0, cell_len));
-	struct v3i far_planes = v3i(ray.d.x >= 0 ? 1 : 0, ray.d.y >= 0 ? 1 : 0, ray.d.z >= 0 ? 1 : 0);
+	struct v3i far_planes = v3u2i(v3u_and(ray.sign, v3i2u(v3i(1, 1, 1))));
 	struct v3f fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(g, far_planes)), big_box.c0);
-	struct v3f step = v3f_cmul(v3i2f(ray.sign), cell_len);
+	struct v3f step = v3u2f(v3u_select(ray.sign, v3f2u(cell_len), v3f2u(v3f_neg(cell_len))));
+	struct v3i sign = v3u2i(v3u_select(ray.sign, v3i2u(v3i(1, 1, 1)), v3i2u(v3i(-1, -1, -1))));
 
 	while (v3i_inside(g, cells)) {
 		draw_cell(red, g);
 		struct v3f max = v3f_sub_cmul(fp, ray.o, ray.inv_d);
 		struct v3u s = v3f_seq(v3f_hmin(max), max);
-		g = v3i_add(g, v3u2i(v3u_and(s, v3i2u(ray.sign))));
+		g = v3i_add(g, v3u2i(v3u_and(s, v3i2u(sign))));
 		fp = v3f_add(fp, v3u2f(v3u_and(s, v3f2u(step))));
 	}
 }

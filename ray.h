@@ -14,7 +14,7 @@ struct ray
 {
 	struct v3f o, d;
 	struct v3f inv_d;
-	struct v3i sign;
+	struct v3u sign;
 };
 
 struct ray init_ray(struct v3f o, struct v3f d)
@@ -22,10 +22,8 @@ struct ray init_ray(struct v3f o, struct v3f d)
 	struct ray ray;
 	ray.o = o;
 	ray.d = d;
-	ray.inv_d = v3f(1.0f / d.x, 1.0f / d.y, 1.0f / d.z);
-	ray.sign = v3i(d.x >= 0 ? 1 : -1,
-			d.y >= 0 ? 1 : -1,
-			d.z >= 0 ? 1 : -1);
+	ray.inv_d = v3f_cdiv(v3f(1, 1, 1), d);
+	ray.sign = v3f_ge(d, v3f(0, 0, 0));
 	return ray;
 }
 
