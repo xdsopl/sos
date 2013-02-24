@@ -260,7 +260,8 @@ struct v3u v3u_not(struct v3u a)
 struct v3u v3u_select(struct v3u a, struct v3u b, struct v3u c)
 {
 #if STREAMING
-	return (struct v3u){ (a.x & b.x) | ((~a.x) & c.x), (a.y & b.y) | ((~a.y) & c.y), (a.z & b.z) | ((~a.z) & c.z) };
+//	return (struct v3u){ (a.x & b.x) | ((~a.x) & c.x), (a.y & b.y) | ((~a.y) & c.y), (a.z & b.z) | ((~a.z) & c.z) };
+	return (struct v3u){ (a.x & (b.x ^ c.x)) ^ c.x, (a.y & (b.y ^ c.y)) ^ c.y, (a.z & (b.z ^ c.z)) ^ c.z };
 #else
 	return (struct v3u){ a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z };
 #endif
