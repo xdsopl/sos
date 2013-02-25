@@ -12,9 +12,10 @@ win: win32/sos.exe
 test: sos
 	./sos
 
-sos: sos.c
+sos: sos.c *.h Makefile
+	$(CC) -o sos sos.c $(CFLAGS) $(LDFLAGS)
 
-win32/sos.exe: sos.c
+win32/sos.exe: sos.c *.h Makefile
 	$(WIN32_CC) -o win32/sos.exe sos.c $(WIN32_CFLAGS) $(WIN32_LDFLAGS)
 
 clean:
