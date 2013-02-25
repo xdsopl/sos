@@ -3,7 +3,7 @@ CFLAGS = $(shell sdl-config --cflags) -std=c99 -Wall -W -O3 -Wextra -ffast-math 
 LDFLAGS = $(shell sdl-config --libs) -lm -lGL
 
 WIN32_CC = i686-mingw32-gcc
-WIN32_CFLAGS = -I../SDL-1.2.15/include/SDL -DM_PI="3.14159265358979323846" -D_GNU_SOURCE=1 -Dmain=SDL_main -std=c99 -Wall -W -O3 -Wextra -ffast-math
+WIN32_CFLAGS = -I../SDL-1.2.15/include/SDL -DM_PI="3.14159265358979323846" -D_GNU_SOURCE=1 -Dmain=SDL_main -std=c99 -Wall -W -O3 -Wextra -ffast-math -msse -msse2 -mfpmath=sse
 WIN32_LDFLAGS = -L../SDL-1.2.15/lib -lmingw32 -lSDLmain -lSDL -mwindows -lopengl32
 
 all: sos
