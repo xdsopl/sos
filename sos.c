@@ -14,6 +14,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #include "matrix.h"
 #include "ray.h"
 #include "aabb.h"
+#include "voxel.h"
 
 struct aabb big_box = {{ -1, -1, -1 }, { 1, 1, 1 }};
 struct v3i cells = { 10, 10, 10 };
@@ -111,38 +112,24 @@ void dynamic_objects()
 	struct ray ray = init_ray(v3f(2, 2, 5), v3f_normal(v3f(0.1 * mouse_x, 0.1 * mouse_y, -1)));
 	struct v3f p0 = ray.o;
 	struct v3f p1 = v3f_mul_add(40, ray.d, ray.o);
-	float l[2];
 	struct v3f red = { 1, 0, 0 };
 	struct v3f cyan = { 0, 1, 1 };
 
-	if (!aabb_ray(l, big_box, ray)) {
+	struct grid grid;
+	if (!init_traversal(&grid, ray, big_box, cells)) {
 		line(cyan, p0, p1);
 		return;
 	}
 
-	struct v3f pl0 = v3f_mul_add(l[0], ray.d, ray.o);
-	struct v3f pl1 = v3f_mul_add(l[1], ray.d, ray.o);
+	struct v3f pl0 = v3f_mul_add(grid.l[0], ray.d, ray.o);
+	struct v3f pl1 = v3f_mul_add(grid.l[1], ray.d, ray.o);
 
 	line(cyan, p0, pl0);
 	line(red, pl0, pl1);
 	line(cyan, pl1, p1);
 
-	struct v3f cell_len = v3f_sub_cdiv(big_box.c1, big_box.c0, v3i2f(cells));
-	float epsilon = 0.001;
-	struct v3f inside = v3f_mul_add(l[0] + epsilon, ray.d, ray.o);
-	struct v3i g = v3f2i(v3f_sub_cdiv(inside, big_box.c0, cell_len));
-	struct v3i far_planes = v3i_and(ray.sign, v3i(1, 1, 1));
-	struct v3f fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(g, far_planes)), big_box.c0);
-	struct v3f step = v3f_select(ray.sign, cell_len, v3f_neg(cell_len));
-	struct v3i sign = v3i_select(ray.sign, v3i(1, 1, 1), v3i(-1, -1, -1));
-
-	while (v3i_inside(g, cells)) {
-		draw_cell(red, g);
-		struct v3f max = v3f_sub_cmul(fp, ray.o, ray.inv_d);
-		struct v3u s = v3f_seq(v3f_hmin(max), max);
-		g = v3i_add(g, v3i_and(s, sign));
-		fp = v3f_add(fp, v3f_and(s, step));
-	}
+	for (first_voxel(&grid); inside_grid(&grid); next_voxel(&grid))
+		draw_cell(red, grid.g);
 }
 
 void draw()
