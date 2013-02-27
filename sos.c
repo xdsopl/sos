@@ -169,14 +169,13 @@ void init_gl()
 
 void recalc_projection()
 {
-	float f;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	if (screen->w > screen->h) {
-		f = (float)screen->h / (float)screen->w;
+		float f = (float)screen->h / (float)screen->w;
 		glFrustum(-zoom, zoom, -f * zoom, f * zoom, 5, 20);
 	} else {
-		f = (float)screen->w / (float)screen->h;
+		float f = (float)screen->w / (float)screen->h;
 		glFrustum(-f * zoom, f * zoom, - zoom, zoom, 5, 20);
 	}
 	glMatrixMode(GL_MODELVIEW);
