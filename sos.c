@@ -32,40 +32,40 @@ void draw_box(struct v3f color, struct aabb box)
 {
 	glColor3f(color.x, color.y, color.z);
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3d(box.c0.x, box.c1.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c0.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c0.y, box.c1.z);
-		glVertex3d(box.c0.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3d(box.c0.x, box.c0.y, box.c1.z);
-		glVertex3d(box.c0.x, box.c1.y, box.c1.z);
-		glVertex3d(box.c0.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c0.x, box.c0.y, box.c1.z);
-		glVertex3d(box.c1.x, box.c0.y, box.c1.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3d(box.c0.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c0.x, box.c1.y, box.c0.z);
-		glVertex3d(box.c0.x, box.c1.y, box.c1.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3d(box.c1.x, box.c0.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c0.z);
-		glVertex3d(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3d(box.c1.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
 	glEnd();
 }
 
@@ -83,8 +83,8 @@ void line(struct v3f color, struct v3f p0, struct v3f p1)
 {
 	glColor3f(color.x, color.y, color.z);
 	glBegin(GL_LINES);
-		glVertex3d(p0.x, p0.y, p0.z);
-		glVertex3d(p1.x, p1.y, p1.z);
+		glVertex3f(p0.x, p0.y, p0.z);
+		glVertex3f(p1.x, p1.y, p1.z);
 	glEnd();
 }
 
