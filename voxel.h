@@ -49,7 +49,6 @@ int init_traversal(struct grid *grid, struct ray ray, struct aabb box, struct v3
 	grid->cells = cells;
 	grid->l[0] = l[0];
 	grid->l[1] = l[1];
-	first_voxel(grid);
 	return 1;
 }
 
