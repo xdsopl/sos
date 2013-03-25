@@ -9,47 +9,55 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #ifndef MATRIX_H
 #define MATRIX_H
 #include <math.h>
+#include <emmintrin.h>
+#include "vector.h"
 
-struct m4f
-{
-	float _00, _01, _02, _03;
-	float _10, _11, _12, _13;
-	float _20, _21, _22, _23;
-	float _30, _31, _32, _33;
-};
+typedef struct {
+	v4sf v0;
+	v4sf v1;
+	v4sf v2;
+	v4sf v3;
+} m4sf;
 
-struct m4f m4f_ident()
+m4sf m4sf_identity()
 {
-	return (struct m4f){
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
+	return (m4sf) {
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
 	};
 }
 
-struct m4f m4f_mul(struct m4f a, struct m4f b)
+m4sf m4sf_mul(m4sf l, m4sf r)
 {
-	float t[16], *l = (float *)&a, *r = (float *)&b;
-	for (int i = 0; i < 4; i++) {
-		for (int k = 0; k < 4; k++) {
-			t[4*i+k] = 0;
-			for (int j = 0; j < 4; j++) {
-				t[4*i+k] += l[4*i+j] * r[4*j+k];
-			}
-		}
-	}
-	return *(struct m4f *)t;
+	return (m4sf) {
+		v4sf_splat0(l.v0) * r.v0 + v4sf_splat1(l.v0) * r.v1 + v4sf_splat2(l.v0) * r.v2 + v4sf_splat3(l.v0) * r.v3,
+		v4sf_splat0(l.v1) * r.v0 + v4sf_splat1(l.v1) * r.v1 + v4sf_splat2(l.v1) * r.v2 + v4sf_splat3(l.v1) * r.v3,
+		v4sf_splat0(l.v2) * r.v0 + v4sf_splat1(l.v2) * r.v1 + v4sf_splat2(l.v2) * r.v2 + v4sf_splat3(l.v2) * r.v3,
+		v4sf_splat0(l.v3) * r.v0 + v4sf_splat1(l.v3) * r.v1 + v4sf_splat2(l.v3) * r.v2 + v4sf_splat3(l.v3) * r.v3
+	};
 }
-struct m4f m4f_rot(float a, struct v3f v)
+
+v4sf m4sf_vmul(m4sf l, v4sf r)
 {
-	float c = cos(a);
-	float s = sin(a);
-	return (struct m4f){
-		v.x*v.x*(1-c)+c,	v.x*v.y*(1-c)-v.z*s,	v.x*v.z*(1-c)+v.y*s,	0,
-		v.y*v.x*(1-c)+v.z*s,	v.y*v.y*(1-c)+c,	v.y*v.z*(1-c)-v.x*s,	0,
-		v.x*v.z*(1-c)-v.y*s,	v.y*v.z*(1-c)+v.x*s,	v.z*v.z*(1-c)+c,	0,
-		0,			0,			0,			1
+	return (v4sf) {
+		v4sf_dot(l.v0, r),
+		v4sf_dot(l.v1, r),
+		v4sf_dot(l.v2, r),
+		v4sf_dot(l.v3, r),
+	};
+}
+
+m4sf m4sf_rot(v4sf v, float a)
+{
+	float c = cosf(a);
+	float s = sinf(a);
+	return (m4sf) {
+		{ v[0]*v[0]*(1-c)+c,		v[0]*v[1]*(1-c)-v[2]*s,	v[0]*v[2]*(1-c)+v[1]*s,	0 },
+		{ v[1]*v[0]*(1-c)+v[2]*s,	v[1]*v[1]*(1-c)+c,	v[1]*v[2]*(1-c)-v[0]*s,	0 },
+		{ v[2]*v[0]*(1-c)-v[1]*s,	v[2]*v[1]*(1-c)+v[0]*s,	v[2]*v[2]*(1-c)+c,	0 },
+		{ 0,				0,			0,			1 }
 	};
 }
 #endif

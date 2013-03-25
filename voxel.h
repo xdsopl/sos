@@ -16,27 +16,27 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 struct grid {
 	struct aabb box;
 	struct ray ray;
-	struct v3i cells;
-	struct v3i g;
-	struct v3f fp;
-	struct v3f step;
-	struct v3i sign;
+	v4si cells;
+	v4si g;
+	v4sf fp;
+	v4sf step;
+	v4si sign;
 	float l[2];
 };
 
 void first_voxel(struct grid *grid)
 {
-	struct v3f cell_len = v3f_sub_cdiv(grid->box.c1, grid->box.c0, v3i2f(grid->cells));
+	v4sf cell_len = (grid->box.c1 - grid->box.c0) / v4si_cvt(grid->cells);
 	float epsilon = 0.001;
-	struct v3f inside = v3f_mul_add(grid->l[0] + epsilon, grid->ray.d, grid->ray.o);
-	grid->g = v3f2i(v3f_sub_cdiv(inside, grid->box.c0, cell_len));
-	struct v3i far_planes = v3i_and(grid->ray.sign, v3i(1, 1, 1));
-	grid->fp = v3f_cmul_add(cell_len, v3i2f(v3i_add(grid->g, far_planes)), grid->box.c0);
-	grid->step = v3f_select(grid->ray.sign, cell_len, v3f_neg(cell_len));
-	grid->sign = v3i_select(grid->ray.sign, v3i(1, 1, 1), v3i(-1, -1, -1));
+	v4sf inside = v4sf_set1(grid->l[0] + epsilon) * grid->ray.d + grid->ray.o;
+	grid->g = v4sf_cvt((inside - grid->box.c0) / cell_len);
+	v4si far_planes = (v4si)(grid->ray.sign & (v4su)v4si_set(1, 1, 1, 0));
+	grid->fp = cell_len * v4si_cvt(grid->g + far_planes) + grid->box.c0;
+	grid->step = v4sf_select(grid->ray.sign, cell_len, -cell_len);
+	grid->sign = v4si_select(grid->ray.sign, v4si_set(1, 1, 1, 0), v4si_set(-1, -1, -1, 0));
 }
 
-int init_traversal(struct grid *grid, struct ray ray, struct aabb box, struct v3i cells)
+int init_traversal(struct grid *grid, struct ray ray, struct aabb box, v4si cells)
 {
 
 	float l[2];
@@ -53,15 +53,15 @@ int init_traversal(struct grid *grid, struct ray ray, struct aabb box, struct v3
 
 void next_voxel(struct grid *grid)
 {
-	struct v3f max = v3f_sub_cmul(grid->fp, grid->ray.o, grid->ray.inv_d);
-	struct v3u s = v3f_seq(v3f_hmin(max), max);
-	grid->fp = v3f_add(grid->fp, v3f_and(s, grid->step));
-	grid->g = v3i_add(grid->g, v3i_and(s, grid->sign));
+	v4sf max = (grid->fp - grid->ray.o) * grid->ray.inv_d;
+	v4su s = v4sf_eq(v4sf_hmin3(max), max);
+	grid->fp += (v4sf)(s & (v4su)grid->step);
+	grid->g += (v4si)(s & (v4su)grid->sign);
 }
 
 int inside_grid(struct grid *grid)
 {
-	return v3i_inside(grid->g, grid->cells);
+	return v4si_inside3(grid->g, grid->cells);
 }
 #endif
 

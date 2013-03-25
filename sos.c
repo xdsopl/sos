@@ -16,10 +16,10 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #include "aabb.h"
 #include "voxel.h"
 
-struct aabb big_box = {{ -1, -1, -1 }, { 1, 1, 1 }};
-struct v3i cells = { 10, 10, 10 };
+struct aabb big_box = {{ -1, -1, -1, 0 }, { 1, 1, 1, 0 }};
+v4si cells = { 10, 10, 10, 0 };
 
-struct m4f rotation;
+m4sf rotation;
 float zoom;
 
 float mouse_x;
@@ -28,73 +28,73 @@ int focus;
 GLint static_objects_list;
 SDL_Surface *screen;
 
-void draw_box(struct v3f color, struct aabb box)
+void draw_box(v4sf color, struct aabb box)
 {
-	glColor3f(color.x, color.y, color.z);
+	glColor3f(color[0], color[1], color[2]);
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
+		glVertex3f(box.c0[0], box.c0[1], box.c0[2]);
+		glVertex3f(box.c0[0], box.c1[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c0[1], box.c0[2]);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
-		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c0[0], box.c0[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c0[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c0[1], box.c1[2]);
+		glVertex3f(box.c0[0], box.c0[1], box.c1[2]);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c0.x, box.c0.y, box.c0.z);
-		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
-		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
-		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c0[0], box.c0[1], box.c0[2]);
+		glVertex3f(box.c0[0], box.c0[1], box.c1[2]);
+		glVertex3f(box.c0[0], box.c1[1], box.c1[2]);
+		glVertex3f(box.c0[0], box.c1[1], box.c0[2]);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c0.x, box.c0.y, box.c1.z);
-		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
+		glVertex3f(box.c0[0], box.c0[1], box.c1[2]);
+		glVertex3f(box.c1[0], box.c0[1], box.c1[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c1[2]);
+		glVertex3f(box.c0[0], box.c1[1], box.c1[2]);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c0.x, box.c1.y, box.c0.z);
-		glVertex3f(box.c0.x, box.c1.y, box.c1.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
+		glVertex3f(box.c0[0], box.c1[1], box.c0[2]);
+		glVertex3f(box.c0[0], box.c1[1], box.c1[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c1[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c0[2]);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(box.c1.x, box.c0.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c0.z);
-		glVertex3f(box.c1.x, box.c1.y, box.c1.z);
-		glVertex3f(box.c1.x, box.c0.y, box.c1.z);
+		glVertex3f(box.c1[0], box.c0[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c0[2]);
+		glVertex3f(box.c1[0], box.c1[1], box.c1[2]);
+		glVertex3f(box.c1[0], box.c0[1], box.c1[2]);
 	glEnd();
 }
 
-void draw_cell(struct v3f color, struct v3i g)
+void draw_cell(v4sf color, v4si g)
 {
-	struct v3f cell_len = v3f_sub_cdiv(big_box.c1, big_box.c0, v3i2f(cells));
+	v4sf cell_len = (big_box.c1 - big_box.c0) / v4si_cvt(cells);
 	struct aabb box = {
-		v3f_cmul_add(cell_len, v3i2f(g), big_box.c0),
-		v3f_cmul_add(cell_len, v3i2f(v3i_sadd(1, g)), big_box.c0)
+		cell_len * v4si_cvt(g) + big_box.c0,
+		cell_len * v4si_cvt(v4si_set1(1) + g) + big_box.c0
 	};
 	draw_box(color, box);
 }
 
-void line(struct v3f color, struct v3f p0, struct v3f p1)
+void line(v4sf color, v4sf p0, v4sf p1)
 {
-	glColor3f(color.x, color.y, color.z);
+	glColor3f(color[0], color[1], color[2]);
 	glBegin(GL_LINES);
-		glVertex3f(p0.x, p0.y, p0.z);
-		glVertex3f(p1.x, p1.y, p1.z);
+		glVertex3f(p0[0], p0[1], p0[2]);
+		glVertex3f(p1[0], p1[1], p1[2]);
 	glEnd();
 }
 
 void static_objects()
 {
-	struct v3i g;
-	for (g.x = 0; g.x < cells.x; g.x++)
-	for (g.y = 0; g.y < cells.y; g.y++)
-	for (g.z = 0; g.z < cells.z; g.z++) {
-		struct v3f color = { 0.1, 0.1, 0.1 };
+	v4si g;
+	for (g[0] = 0; g[0] < cells[0]; g[0]++)
+	for (g[1] = 0; g[1] < cells[1]; g[1]++)
+	for (g[2] = 0; g[2] < cells[2]; g[2]++) {
+		v4sf color = { 0.1, 0.1, 0.1 };
 		draw_cell(color, g);
 	}
 }
@@ -109,11 +109,11 @@ void make_list()
 
 void dynamic_objects()
 {
-	struct ray ray = init_ray(v3f(2, 2, 5), v3f_normal(v3f(0.1 * mouse_x, 0.1 * mouse_y, -1)));
-	struct v3f p0 = ray.o;
-	struct v3f p1 = v3f_mul_add(40, ray.d, ray.o);
-	struct v3f red = { 1, 0, 0 };
-	struct v3f cyan = { 0, 1, 1 };
+	struct ray ray = init_ray(v4sf_set(2, 2, 5, 0), v4sf_normal3(v4sf_set(0.1 * mouse_x, 0.1 * mouse_y, -1, 0)));
+	v4sf p0 = ray.o;
+	v4sf p1 = v4sf_set1(40) * ray.d + ray.o;
+	v4sf red = { 1, 0, 0, 0 };
+	v4sf cyan = { 0, 1, 1, 0 };
 
 	struct grid grid;
 	if (!init_traversal(&grid, ray, big_box, cells)) {
@@ -121,8 +121,8 @@ void dynamic_objects()
 		return;
 	}
 
-	struct v3f pl0 = v3f_mul_add(grid.l[0], ray.d, ray.o);
-	struct v3f pl1 = v3f_mul_add(grid.l[1], ray.d, ray.o);
+	v4sf pl0 = v4sf_set1(grid.l[0]) * ray.d + ray.o;
+	v4sf pl1 = v4sf_set1(grid.l[1]) * ray.d + ray.o;
 
 	line(cyan, p0, pl0);
 	line(red, pl0, pl1);
@@ -194,7 +194,7 @@ void handle_events()
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 					case SDLK_r:
-						rotation = m4f_ident();
+						rotation = m4sf_identity();
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
@@ -238,8 +238,8 @@ void handle_events()
 				break;
 			case SDL_MOUSEMOTION:
 				if (button_left) {
-					rotation = m4f_mul(rotation, m4f_rot(-M_PI * (float)event.motion.yrel / (float)screen->h, v3f(1, 0, 0)));
-					rotation = m4f_mul(rotation, m4f_rot(-M_PI * (float)event.motion.xrel / (float)screen->w, v3f(0, 1, 0)));
+					rotation = m4sf_mul(rotation, m4sf_rot(v4sf_set(1, 0, 0, 0), -M_PI * (float)event.motion.yrel / (float)screen->h));
+					rotation = m4sf_mul(rotation, m4sf_rot(v4sf_set(0, 1, 0, 0), -M_PI * (float)event.motion.xrel / (float)screen->w));
 				}
 				if (button_right) {
 					mouse_x += (float)event.motion.xrel / (float)screen->w;
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
 	mouse_x = -4.0;
 	mouse_y = -4.0;
 	focus = 1;
-	rotation = m4f_ident();
+	rotation = m4sf_identity();
 	atexit(SDL_Quit);
 	SDL_Init(SDL_INIT_VIDEO);
 	resize_screen(640, 480);

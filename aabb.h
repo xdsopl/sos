@@ -13,15 +13,15 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 struct aabb
 {
-	struct v3f c0, c1;
+	v4sf c0, c1;
 };
 
 int aabb_ray(float l[2], struct aabb box, struct ray ray)
 {
-	struct v3f a = v3f_sub_cmul(box.c0, ray.o, ray.inv_d);
-	struct v3f b = v3f_sub_cmul(box.c1, ray.o, ray.inv_d);
-	l[0] = v3f_hmax(v3f_cmin(a, b));
-	l[1] = v3f_hmin(v3f_cmax(a, b));
+	v4sf a = (box.c0 - ray.o) * ray.inv_d;
+	v4sf b = (box.c1 - ray.o) * ray.inv_d;
+	l[0] = v4sf_hmax3_float(v4sf_min(a, b));
+	l[1] = v4sf_hmin3_float(v4sf_max(a, b));
 	return l[0] < l[1];
 }
 #endif
