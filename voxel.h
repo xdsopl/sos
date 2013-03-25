@@ -21,7 +21,6 @@ struct grid {
 	struct v3f fp;
 	struct v3f step;
 	struct v3i sign;
-	struct v3f cell_len;
 	float l[2];
 };
 
