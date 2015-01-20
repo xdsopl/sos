@@ -8,7 +8,7 @@ This demo is intended to be a simple starting point for beginners interested
 in writing their own OpenGL applications using the SDL framework.
 
 It demonstrates voxel traversal of a ray through an uniform grid:
-http://aam.mathematik.uni-freiburg.de/IAM/homepages/ainan/sos.png
+https://sites.google.com/site/xdsopl/home/voxel_traversal.png
 
 The algorithm can be used for accelerating ray tracing for example.
 
